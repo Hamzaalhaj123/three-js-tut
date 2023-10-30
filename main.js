@@ -33,7 +33,7 @@ camera.position.z = 10;
 scene.add(camera);
 // Renderer
 const canvas = document.querySelector(".webgl");
-const renderer = new THREE.WebGL1Renderer({ canvas });
+const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setPixelRatio(2);
 renderer.setSize(sizes.width, sizes.height);
 renderer.render(scene, camera);
@@ -59,8 +59,31 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
   renderer.setSize(sizes.width, sizes.height);
 });
-
 const loop = () => {
+  const time = Date.now() * 0.0005; // Adjust the speed of the orbit
+
+  const radius = 5; // Adjust the radius of the orbit
+  const xPos = Math.cos(time) * radius;
+  const zPos = Math.sin(time) * radius;
+
+  mesh.position.set(xPos, 0, zPos);
+  mesh.rotation.y += 0.01; // Adjust the rotation speed as needed
+
+  // Calculate the distance of the camera from the sphere
+  const cameraDistance = radius + mesh.geometry.parameters.radius;
+
+  // Adjust the camera position and field of view
+  const fov = 90; // Adjust the field of view as needed
+  const aspectRatio = sizes.width / sizes.height;
+  const cameraHeight = cameraDistance * Math.tan((fov / 2) * (Math.PI / 180));
+  const cameraWidth = cameraHeight * aspectRatio;
+
+  camera.position.set(0, cameraDistance, cameraHeight);
+  camera.lookAt(scene.position);
+  camera.fov = fov;
+  camera.aspect = aspectRatio;
+  camera.updateProjectionMatrix();
+
   controls.update();
   renderer.render(scene, camera);
   window.requestAnimationFrame(loop);
