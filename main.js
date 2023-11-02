@@ -38,9 +38,12 @@ proton2.position.x = 2;
 scene.add(proton2);
 
 // Neutrons (Cylinder)
-const neutronGeometry = new THREE.CylinderGeometry(0.5, 0.5, 4, 32);
+const neutronGeometry = new THREE.CylinderGeometry(0.25, 0.25, 2.3, 32);
 const neutronMaterial = new THREE.MeshStandardMaterial({ color: "#808080" });
 
+const neutrons = new THREE.Mesh(neutronGeometry, neutronMaterial);
+neutrons.rotation.z = Math.PI / 2; // Rotate the cylinder 90 degrees around the x-axis
+scene.add(neutrons);
 // Electrons (Spheres)
 const electronGeometry = new THREE.SphereGeometry(0.5, 16, 16);
 const electronMaterial = new THREE.MeshStandardMaterial({ color: "#00ff00" });
@@ -52,9 +55,7 @@ scene.add(electron1);
 const electron2 = new THREE.Mesh(electronGeometry, electronMaterial);
 electron2.position.x = 4;
 scene.add(electron2);
-const neutrons = new THREE.Mesh(neutronGeometry, neutronMaterial);
-neutrons.rotation.z = Math.PI / 2; // Rotate the cylinder 90 degrees around the x-axis
-scene.add(neutrons);
+
 // Light
 const light = new THREE.AmbientLight(0xffffff, 1, 100);
 light.position.set(0, 10, 10);
