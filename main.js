@@ -3,23 +3,11 @@ import "./style.css";
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // Scene
-
+// Scene
 const scene = new THREE.Scene();
-
-// Create our sphere
-const geometry = new THREE.SphereGeometry(3, 64, 64);
-const material = new THREE.MeshStandardMaterial({ color: "#f0f8ff" });
-
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
 
 // Sizes
 const sizes = { width: window.innerWidth, height: window.innerHeight };
-
-// Light
-const light = new THREE.PointLight(0xffffff, 70, 100);
-light.position.set(0, 10, 10);
-scene.add(light);
 
 // Camera
 const camera = new THREE.PerspectiveCamera(
@@ -27,65 +15,92 @@ const camera = new THREE.PerspectiveCamera(
   sizes.width / sizes.height,
   0.1,
   100
-); //! LEARN ABOUT THE CAMERA PERSPECTIVE
-
+);
 camera.position.z = 10;
 scene.add(camera);
+
 // Renderer
 const canvas = document.querySelector(".webgl");
 const renderer = new THREE.WebGLRenderer({ canvas });
-renderer.setPixelRatio(2);
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(sizes.width, sizes.height);
-renderer.render(scene, camera);
+
+// Oxygen Atom (Protons)
+const protonGeometry = new THREE.SphereGeometry(1, 32, 32);
+const protonMaterial = new THREE.MeshStandardMaterial({ color: "#ff0000" });
+
+const proton1 = new THREE.Mesh(protonGeometry, protonMaterial);
+proton1.position.x = -2;
+scene.add(proton1);
+
+const proton2 = new THREE.Mesh(protonGeometry, protonMaterial);
+proton2.position.x = 2;
+scene.add(proton2);
+
+// Neutrons (Cylinder)
+const neutronGeometry = new THREE.CylinderGeometry(0.5, 0.5, 4, 32);
+const neutronMaterial = new THREE.MeshStandardMaterial({ color: "#808080" });
+
+// Electrons (Spheres)
+const electronGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+const electronMaterial = new THREE.MeshStandardMaterial({ color: "#00ff00" });
+
+const electron1 = new THREE.Mesh(electronGeometry, electronMaterial);
+electron1.position.x = -4;
+scene.add(electron1);
+
+const electron2 = new THREE.Mesh(electronGeometry, electronMaterial);
+electron2.position.x = 4;
+scene.add(electron2);
+const neutrons = new THREE.Mesh(neutronGeometry, neutronMaterial);
+neutrons.rotation.z = Math.PI / 2; // Rotate the cylinder 90 degrees around the x-axis
+scene.add(neutrons);
+// Light
+const light = new THREE.AmbientLight(0xffffff, 1, 100);
+light.position.set(0, 10, 10);
+scene.add(light);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.enablePan = false;
-controls.enableZoom = false;
-controls.autoRotate = true;
-controls.autoRotateSpeed = 4;
+controls.enableZoom = true;
+
 // Resize
-
 window.addEventListener("resize", () => {
-  // Update Sizes
-
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
-
-  // Update Camera
 
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
   renderer.setSize(sizes.width, sizes.height);
 });
-const loop = () => {
-  const time = Date.now() * 0.0005; // Adjust the speed of the orbit
 
-  const radius = 5; // Adjust the radius of the orbit
-  const xPos = Math.cos(time) * radius;
-  const zPos = Math.sin(time) * radius;
+// Animation Loop
+const animate = () => {
+  requestAnimationFrame(animate);
 
-  mesh.position.set(xPos, 0, zPos);
-  mesh.rotation.y += 0.01; // Adjust the rotation speed as needed
+  // Rotate protons
+  proton1.rotation.y += 0.01;
+  proton2.rotation.y += 0.01;
 
-  // Calculate the distance of the camera from the sphere
-  const cameraDistance = radius + mesh.geometry.parameters.radius;
+  // Orbit electrons
+  const electronOrbitSpeed = 0.005;
+  const electronOrbitRadius = 6;
 
-  // Adjust the camera position and field of view
-  const fov = 90; // Adjust the field of view as needed
-  const aspectRatio = sizes.width / sizes.height;
-  const cameraHeight = cameraDistance * Math.tan((fov / 2) * (Math.PI / 180));
-  const cameraWidth = cameraHeight * aspectRatio;
+  electron1.position.x =
+    Math.cos(Date.now() * electronOrbitSpeed) * electronOrbitRadius;
+  electron1.position.z =
+    Math.sin(Date.now() * electronOrbitSpeed) * electronOrbitRadius;
 
-  camera.position.set(0, cameraDistance, cameraHeight);
-  camera.lookAt(scene.position);
-  camera.fov = fov;
-  camera.aspect = aspectRatio;
-  camera.updateProjectionMatrix();
+  electron2.position.x =
+    Math.cos(Date.now() * electronOrbitSpeed + Math.PI) * electronOrbitRadius;
+  electron2.position.z =
+    Math.sin(Date.now() * electronOrbitSpeed + Math.PI) * electronOrbitRadius;
 
+  // Render the scene
   controls.update();
   renderer.render(scene, camera);
-  window.requestAnimationFrame(loop);
 };
-loop();
+
+animate();
