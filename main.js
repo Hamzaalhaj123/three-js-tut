@@ -3,16 +3,12 @@ import "./style.css";
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // Scene
-// Scene
 const scene = new THREE.Scene();
-
-// Sizes
-const sizes = { width: window.innerWidth, height: window.innerHeight };
 
 // Camera
 const camera = new THREE.PerspectiveCamera(
   45,
-  sizes.width / sizes.height,
+  window.innerWidth / window.innerHeight,
   0.1,
   100
 );
@@ -23,9 +19,11 @@ scene.add(camera);
 const canvas = document.querySelector(".webgl");
 const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(sizes.width, sizes.height);
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-// Oxygen Atom (Protons)
+const grid = new THREE.GridHelper(20);
+scene.add(grid);
+// Oxygen Atoms (Protons)
 const protonGeometry = new THREE.SphereGeometry(1, 32, 32);
 const protonMaterial = new THREE.MeshStandardMaterial({ color: "#ff0000" });
 
@@ -37,13 +35,6 @@ const proton2 = new THREE.Mesh(protonGeometry, protonMaterial);
 proton2.position.x = 2;
 scene.add(proton2);
 
-// Neutrons (Cylinder)
-const neutronGeometry = new THREE.CylinderGeometry(0.25, 0.25, 2.3, 32);
-const neutronMaterial = new THREE.MeshStandardMaterial({ color: "#808080" });
-
-const neutrons = new THREE.Mesh(neutronGeometry, neutronMaterial);
-neutrons.rotation.z = Math.PI / 2; // Rotate the cylinder 90 degrees around the x-axis
-scene.add(neutrons);
 // Electrons (Spheres)
 const electronGeometry = new THREE.SphereGeometry(0.5, 16, 16);
 const electronMaterial = new THREE.MeshStandardMaterial({ color: "#00ff00" });
@@ -64,21 +55,11 @@ scene.add(light);
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
-controls.enablePan = false;
+controls.enablePan = true;
 controls.enableZoom = true;
 
-// Resize
-window.addEventListener("resize", () => {
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
-
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-  renderer.setSize(sizes.width, sizes.height);
-});
-
 // Animation Loop
-const animate = () => {
+function animate() {
   requestAnimationFrame(animate);
 
   // Rotate protons
@@ -100,8 +81,7 @@ const animate = () => {
     Math.sin(Date.now() * electronOrbitSpeed + Math.PI) * electronOrbitRadius;
 
   // Render the scene
-  controls.update();
   renderer.render(scene, camera);
-};
+}
 
 animate();
