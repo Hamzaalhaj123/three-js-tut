@@ -10,14 +10,14 @@
   },
   "devDependencies": {
     "prettier-plugin-multiline-arrays": "^3.0.0",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
     "vite-plugin-glsl": "^1.1.2"
   },
   "dependencies": {
-    "@types/three": "^0.155.0",
+    "@types/three": "^0.155.1",
     "gl-matrix": "^3.4.3",
     "three": "^0.158.0",
-    "vite-tsconfig-paths": "^4.2.0"
+    "vite-tsconfig-paths": "^4.2.1"
   }
 }
